@@ -1,4 +1,4 @@
-package route
+package register
 
 import "github.com/gofiber/fiber/v2"
 
