@@ -11,7 +11,7 @@ import (
 )
 
 type Find []string
-type Pair struct{ PackageName, From, Function, Comment string }
+type Method struct{ Comment, Type, Name, PackageName, From string }
 
 func (f *Find) packages(start string) {
 	files, err := os.ReadDir(start)
@@ -35,32 +35,40 @@ func (f *Find) packages(start string) {
 	}
 }
 
-func readPackage(dir string) (pair []Pair) {
+func readPackage(dir string) (methods []Method) {
 	fset := token.NewFileSet()
-	d, err := parser.ParseDir(fset, dir, nil, parser.ParseComments)
+	pkg, err := parser.ParseDir(fset, dir, nil, parser.ParseComments)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for name, f := range d {
+	for name, f := range pkg {
 		p := doc.New(f, "./", 2)
 
-		for _, f := range p.Funcs {
-
-			pair = append(pair, Pair{
-				PackageName: name,
-				From:        p.ImportPath,
-				Comment:     ToJungeLine(f.Doc),
-				Function:    f.Name,
-			})
+		for _, t := range p.Types {
+			methods = append(methods, ToMethods(name, dir, t)...)
 		}
 	}
 
-	return pair
+	return
 }
 
-func GetJungleFunctionComments() (pair []Pair) {
+func ToMethods(name, dir string, t *doc.Type) (methods []Method) {
+	for _, m := range t.Methods {
+		methods = append(methods, Method{
+			PackageName: name,
+			From:        dir,
+			Type:        t.Name,
+			Comment:     ToJungeLine(m.Doc),
+			Name:        m.Name,
+		})
+	}
+
+	return
+}
+
+func GetJungleMethods() (pair []Method) {
 	find := Find{"./"}
 	find.packages("./")
 
