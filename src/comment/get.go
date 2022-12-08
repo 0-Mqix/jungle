@@ -11,7 +11,6 @@ import (
 )
 
 type Find []string
-type Method struct{ Comment, Type, Name, PackageName, From string }
 
 func (f *Find) packages(start string) {
 	files, err := os.ReadDir(start)
@@ -54,14 +53,21 @@ func readPackage(dir string) (methods []Method) {
 	return
 }
 
-func ToMethods(name, dir string, t *doc.Type) (methods []Method) {
+func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
+
 	for _, m := range t.Methods {
+		annotation := ToJungeAnnotation(m.Doc, ":")
+
+		if annotation == "" {
+			continue
+		}
+
 		methods = append(methods, Method{
-			PackageName: name,
-			From:        dir,
-			Type:        t.Name,
-			Comment:     ToJungeLine(m.Doc),
-			Name:        m.Name,
+			Dir:        dir,
+			Pkg:        pkg,
+			Type:       t.Name,
+			Annotation: annotation,
+			Name:       m.Name,
 		})
 	}
 
@@ -79,10 +85,13 @@ func GetJungleMethods() (pair []Method) {
 	return
 }
 
-func ToJungeLine(doc string) string {
+func ToJungeAnnotation(doc, spliter string) string {
 	for _, line := range strings.Split(doc, "\n") {
-		if strings.Contains(line, "@jungle") {
-			return line
+
+		index := strings.Index(line, "@jungle"+spliter)
+
+		if index == 0 {
+			return strings.Replace(line, "@jungle"+spliter, "", 1)
 		}
 	}
 
