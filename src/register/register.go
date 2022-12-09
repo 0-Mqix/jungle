@@ -13,7 +13,7 @@ var (
 	RouteType = reflect.TypeOf(Route{})
 )
 
-func JungleRoutes(app *fiber.App, structs ...interface{}) {
+func JungleRoutes(directory string, app *fiber.App, debug bool, structs ...interface{}) {
 	values := make(map[string]reflect.Value)
 
 	fmt.Println("[JUNGLE]")
@@ -40,7 +40,7 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 
 	var last string
 
-	for _, m := range comment.GetJungleMethods() {
+	for _, m := range comment.GetJungleMethods(directory, debug) {
 		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
 		method := values[name].MethodByName(m.Name)
 		t := method.Type()

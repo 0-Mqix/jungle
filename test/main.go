@@ -27,7 +27,7 @@ func main() {
 	hey := Hey{}
 	msg := msg.Msg("This is Magic")
 
-	register.JungleRoutes(app, &msg, &hey)
+	register.JungleRoutes("./", app, true, &msg, &hey)
 
 	app.Listen(":3000")
 }

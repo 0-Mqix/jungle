@@ -74,9 +74,17 @@ func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 	return
 }
 
-func GetJungleMethods() (pair []Method) {
-	find := Find{"./"}
-	find.packages("./")
+func GetJungleMethods(directory string, print bool) (pair []Method) {
+	find := make(Find, 0)
+	find.packages(directory)
+
+	if print {
+		fmt.Println("  Directories:")
+		for _, dir := range find {
+			fmt.Println("  ", dir)
+		}
+		fmt.Println()
+	}
 
 	for _, dir := range find {
 		pair = append(pair, readPackage(dir)...)
