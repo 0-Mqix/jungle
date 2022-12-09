@@ -23,11 +23,15 @@ func (h *Hey) test(c *fiber.Ctx) error {
 
 func main() {
 	app := fiber.New()
-
 	hey := Hey{}
 	msg := msg.Msg("This is Magic")
 
-	register.JungleRoutes("./", app, true, &msg, &hey)
+	register.JungleRoutes(register.Config{
+		Directory:    "../",
+		Export:       true,
+		Debug:        true,
+		ExportTarget: "./jungle",
+	}, app, &msg, &hey)
 
 	app.Listen(":3000")
 }

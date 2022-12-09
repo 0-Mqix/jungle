@@ -13,7 +13,14 @@ var (
 	RouteType = reflect.TypeOf(Route{})
 )
 
-func JungleRoutes(directory string, app *fiber.App, debug bool, structs ...interface{}) {
+type Config struct {
+	Directory    string
+	Debug        bool
+	Export       bool
+	ExportTarget string
+}
+
+func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 	values := make(map[string]reflect.Value)
 
 	fmt.Println("[JUNGLE]")
@@ -39,8 +46,14 @@ func JungleRoutes(directory string, app *fiber.App, debug bool, structs ...inter
 	fmt.Println("\n Comment Methods:")
 
 	var last string
+	methods := comment.GetJungleMethods(config.Directory, config.Debug)
+	file := StartJungleFile(&config)
 
-	for _, m := range comment.GetJungleMethods(directory, debug) {
+	if len(methods) == 0 {
+		methods = file.Import()
+	}
+
+	for _, m := range methods {
 		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
 		method := values[name].MethodByName(m.Name)
 		t := method.Type()
