@@ -7,7 +7,7 @@ import (
 
 type Msg string
 
-// @junge:register
+// @jungle:register
 func (h *Msg) Test() register.Route {
 	return register.Route{
 		Method:  "GET",

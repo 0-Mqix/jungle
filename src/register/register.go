@@ -38,10 +38,18 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 
 	fmt.Println("\n Comment Methods:")
 
+	var last string
+
 	for _, m := range comment.GetJungleMethods() {
 		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
 		method := values[name].MethodByName(m.Name)
 		t := method.Type()
+
+		if last != "" && m.Pkg+m.Struct != last {
+			fmt.Println()
+		}
+
+		last = m.Pkg + m.Struct
 
 		fmt.Printf("  %s.%s.%s", m.Pkg, m.Struct, m.Name)
 
