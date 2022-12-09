@@ -99,7 +99,7 @@ func ToJungeAnnotation(name, doc, spliter string) string {
 			return strings.Replace(line, "@jungle"+spliter, "", 1)
 		}
 
-		fmt.Printf("  %s [x]\n   ANNOTATION UNKNOWN\n   %s\n", name, line[1:])
+		fmt.Printf("  %s [x]\n   ANNOTATION UNKNOWN\n   %s\n\n", name, line[1:])
 	}
 
 	return ""
