@@ -65,7 +65,7 @@ func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 		methods = append(methods, Method{
 			Dir:        dir,
 			Pkg:        pkg,
-			Type:       t.Name,
+			Struct:     t.Name,
 			Annotation: annotation,
 			Name:       m.Name,
 		})

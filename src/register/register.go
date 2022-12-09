@@ -16,31 +16,39 @@ var (
 func JungleRoutes(app *fiber.App, structs ...interface{}) {
 	values := make(map[string]reflect.Value)
 
-	fmt.Println("Struct Names:")
+	fmt.Println("[JUNGLE]")
+	fmt.Println(strings.Repeat("-", 50))
+	fmt.Println(" Struct Names:")
 
 	for _, s := range structs {
 		v := reflect.ValueOf(reflect.ValueOf(s).Interface())
-		values[reflect.TypeOf(s).Elem().Name()] = v
 
-		fmt.Println(reflect.TypeOf(s).Elem().Name())
+		e := reflect.TypeOf(s).Elem()
+		name := fmt.Sprintf("%s.%s", e.PkgPath(), e.Name())
+
+		fmt.Println(" ", name)
+
+		values[name] = v
 	}
 
-	fmt.Println("Comment Types:")
+	fmt.Println("\n Comment Methods:")
 
 	for _, m := range comment.GetJungleMethods() {
-		method := values[m.Type].MethodByName(m.Name)
+		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
+		method := values[name].MethodByName(m.Name)
 		t := method.Type()
 
-		fmt.Println(m.Type, "1")
+		fmt.Printf("  %s.%s.%s", m.Pkg, m.Struct, m.Name)
 
 		if m.Annotation != "register" ||
 			t.NumOut() != 1 ||
 			t.NumIn() != 0 ||
 			t.Out(0) != RouteType {
+			fmt.Printf(" x \n")
 			continue
 		}
 
-		fmt.Println(m.Type, "2")
+		fmt.Printf(" ✓ \n")
 
 		returns := method.Call([]reflect.Value{})
 
@@ -49,6 +57,8 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 			FiberRegisterRoute(app, route, m)
 		}
 	}
+
+	fmt.Println(strings.Repeat("-", 50))
 }
 
 func FiberRegisterRoute(app *fiber.App, route Route, source comment.Method) {
