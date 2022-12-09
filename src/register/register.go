@@ -24,10 +24,15 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 		v := reflect.ValueOf(reflect.ValueOf(s).Interface())
 
 		e := reflect.TypeOf(s).Elem()
-		name := fmt.Sprintf("%s.%s", e.PkgPath(), e.Name())
+		pkg := e.PkgPath()
 
+		if pkg != "main" {
+			index := strings.LastIndex(e.PkgPath(), "/") + 1
+			pkg = e.PkgPath()[index:]
+
+		}
+		name := fmt.Sprintf("%s.%s", pkg, e.Name())
 		fmt.Println(" ", name)
-
 		values[name] = v
 	}
 
