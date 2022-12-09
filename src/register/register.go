@@ -16,14 +16,22 @@ var (
 func JungleRoutes(app *fiber.App, structs ...interface{}) {
 	values := make(map[string]reflect.Value)
 
+	fmt.Println("Struct Names:")
+
 	for _, s := range structs {
 		v := reflect.ValueOf(reflect.ValueOf(s).Interface())
 		values[reflect.TypeOf(s).Elem().Name()] = v
+
+		fmt.Println(reflect.TypeOf(s).Elem().Name())
 	}
+
+	fmt.Println("Comment Types:")
 
 	for _, m := range comment.GetJungleMethods() {
 		method := values[m.Type].MethodByName(m.Name)
 		t := method.Type()
+
+		fmt.Println(m.Type, "1")
 
 		if m.Annotation != "register" ||
 			t.NumOut() != 1 ||
@@ -31,6 +39,8 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 			t.Out(0) != RouteType {
 			continue
 		}
+
+		fmt.Println(m.Type, "2")
 
 		returns := method.Call([]reflect.Value{})
 
