@@ -49,11 +49,11 @@ func JungleRoutes(app *fiber.App, structs ...interface{}) {
 			t.NumOut() != 1 ||
 			t.NumIn() != 0 ||
 			t.Out(0) != RouteType {
-			fmt.Printf(" x \n")
+			fmt.Printf(" [x] \n")
 			continue
 		}
 
-		fmt.Printf(" ✓ \n")
+		fmt.Printf(" [✓] \n")
 
 		returns := method.Call([]reflect.Value{})
 

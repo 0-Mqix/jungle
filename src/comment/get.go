@@ -21,7 +21,6 @@ func (f *Find) packages(start string) {
 
 	for _, file := range files {
 		if file.IsDir() {
-
 			path := start + file.Name()
 
 			if start != "./" {
@@ -56,7 +55,8 @@ func readPackage(dir string) (methods []Method) {
 func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 
 	for _, m := range t.Methods {
-		annotation := ToJungeAnnotation(m.Doc, ":")
+		name := fmt.Sprintf("%s.%s.%s", pkg, t.Name, m.Name)
+		annotation := ToJungeAnnotation(name, m.Doc, ":")
 
 		if annotation == "" {
 			continue
@@ -85,14 +85,21 @@ func GetJungleMethods() (pair []Method) {
 	return
 }
 
-func ToJungeAnnotation(doc, spliter string) string {
+func ToJungeAnnotation(name, doc, spliter string) string {
 	for _, line := range strings.Split(doc, "\n") {
+		index := strings.Index(line, "@")
 
-		index := strings.Index(line, "@jungle"+spliter)
+		if index != 0 {
+			return ""
+		}
+
+		index = strings.Index(line, "@jungle"+spliter)
 
 		if index == 0 {
 			return strings.Replace(line, "@jungle"+spliter, "", 1)
 		}
+
+		fmt.Printf("  %s [x]\n   ANNOTATION UNKNOWN\n   %s\n", name, line[1:])
 	}
 
 	return ""
