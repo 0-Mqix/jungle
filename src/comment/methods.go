@@ -10,7 +10,6 @@ type Config struct {
 }
 
 type Method struct {
-	Dir        string `json:"directory"`
 	Pkg        string `json:"package"`
 	Annotation string `json:"annotation"`
 	Struct     string `json:"struct"`

@@ -14,7 +14,7 @@ var (
 )
 
 type Config struct {
-	Directory    string
+	Directories  []string
 	Debug        bool
 	Export       bool
 	ExportTarget string
@@ -38,6 +38,7 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 			pkg = e.PkgPath()[index:]
 
 		}
+
 		name := fmt.Sprintf("%s.%s", pkg, e.Name())
 		fmt.Println(" ", name)
 		values[name] = v
@@ -46,12 +47,19 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 	fmt.Println("\n Comment Methods:")
 
 	var last string
-	methods := comment.GetJungleMethods(config.Directory, config.Debug)
+	var methods []comment.Method
+
+	for _, directory := range config.Directories {
+		methods = append(methods, comment.GetJungleMethods(directory, config.Debug)...)
+	}
+
 	file := StartJungleFile(&config)
 
 	if len(methods) == 0 {
 		methods = file.Import()
 	}
+
+	file.Clear()
 
 	for _, m := range methods {
 		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
@@ -62,7 +70,7 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 			fmt.Println()
 		}
 
-		last = m.Pkg + m.Struct
+		last = name
 
 		fmt.Printf("  %s.%s.%s", m.Pkg, m.Struct, m.Name)
 
@@ -76,12 +84,12 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 
 		fmt.Printf(" [✓] \n")
 
-		returns := method.Call([]reflect.Value{})
-
-		for _, r := range returns {
+		for _, r := range method.Call([]reflect.Value{}) {
 			route := r.Interface().(Route)
 			FiberRegisterRoute(app, route, m)
 		}
+
+		file.Add(m)
 	}
 
 	fmt.Println(strings.Repeat("-", 50))

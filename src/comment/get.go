@@ -63,7 +63,6 @@ func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 		}
 
 		methods = append(methods, Method{
-			Dir:        dir,
 			Pkg:        pkg,
 			Struct:     t.Name,
 			Annotation: annotation,
@@ -75,7 +74,7 @@ func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 }
 
 func GetJungleMethods(directory string, print bool) (pair []Method) {
-	find := make(Find, 0)
+	find := Find{"./"}
 	find.packages(directory)
 
 	if print {

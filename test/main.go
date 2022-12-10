@@ -27,7 +27,7 @@ func main() {
 	msg := msg.Msg("This is Magic")
 
 	register.JungleRoutes(register.Config{
-		Directory:    "../",
+		Directories:  []string{"./"},
 		Export:       true,
 		Debug:        true,
 		ExportTarget: "./jungle",
