@@ -15,7 +15,8 @@ type jungleFile struct {
 }
 
 func StartJungleFile(config *Config) *jungleFile {
-	f, err := os.OpenFile(config.ExportTarget, os.O_RDWR, 0644)
+	f, err := os.OpenFile(config.target, os.O_RDWR|os.O_CREATE, 0644)
+
 	if err != nil {
 		fmt.Println("start:", err)
 	}
@@ -32,13 +33,17 @@ func (e *jungleFile) Clear() {
 }
 
 func (e *jungleFile) Import() (pairs []comment.Method) {
-	content, err := os.ReadFile(e.Target.Name())
+	content, err := os.ReadFile(e.Config.target)
 
 	if err != nil {
 		fmt.Println("import read:", err)
 	}
 
 	for _, line := range bytes.Split(content, []byte{'\n'}) {
+		if len(line) == 0 {
+			continue
+		}
+
 		method := comment.Method{}
 		err := json.Unmarshal(line, &method)
 

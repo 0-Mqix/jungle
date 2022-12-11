@@ -5,7 +5,6 @@ import (
 	"go/doc"
 	"go/parser"
 	"go/token"
-	"log"
 	"os"
 	"strings"
 )
@@ -16,7 +15,7 @@ func (f *Find) packages(start string) {
 	files, err := os.ReadDir(start)
 
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	for _, file := range files {
@@ -38,7 +37,7 @@ func readPackage(dir string) (methods []Method) {
 	pkg, err := parser.ParseDir(fset, dir, nil, parser.ParseComments)
 
 	if err != nil {
-		fmt.Println(err)
+		return
 	}
 
 	for name, f := range pkg {
@@ -74,8 +73,8 @@ func ToMethods(pkg, dir string, t *doc.Type) (methods []Method) {
 }
 
 func GetJungleMethods(directory string, print bool) (pair []Method) {
-	find := Find{"./"}
-	find.packages(directory)
+	find := Find{directory}
+	find.packages(find[0])
 
 	if print {
 		fmt.Println("  Directories:")
