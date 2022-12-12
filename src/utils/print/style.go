@@ -9,6 +9,9 @@ type Padding int
 type InferCenter bool
 type InferLevel bool
 
+type Odd []color.Attribute
+type Even []color.Attribute
+
 const (
 	LEFT Alignment = iota + 0
 	RIGHT
@@ -25,10 +28,12 @@ type Style struct {
 	InferCenter bool
 	InferLevel  bool
 	Alignment   Alignment
+	Odd         Odd
+	Even        Even
 }
 
 func DefaultStyle() Style {
-	return Style{Padding: DefaultPadding}
+	return Style{Padding: DefaultPadding, InferLevel: true, InferCenter: true}
 }
 
 func (e *Element) Style(input ...interface{}) *Element {
@@ -42,6 +47,10 @@ func (e *Element) Style(input ...interface{}) *Element {
 			e.style.InferLevel = bool(v)
 		case Alignment:
 			e.style.Alignment = v
+		case Even:
+			e.style.Even = v
+		case Odd:
+			e.style.Odd = v
 		}
 	}
 

@@ -3,6 +3,7 @@ package print
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/fatih/color"
 )
@@ -102,6 +103,19 @@ func (line Line) Split() []Line {
 	result = append(result, new)
 
 	return result
+}
+
+func Size(lines ...Line) int {
+	var size int
+	for _, line := range lines {
+		s := utf8.RuneCountInString(line.String())
+
+		if s > size {
+			size = s
+		}
+	}
+
+	return size
 }
 
 func (line Line) Print() {

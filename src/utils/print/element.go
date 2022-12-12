@@ -6,11 +6,11 @@ import (
 )
 
 type Element struct {
-	level    int
-	line     Line
-	next     []*Element
-	previous *Element
-	style    Style
+	level     int
+	line      Line
+	childeren []*Element
+	parent    *Element
+	style     Style
 }
 
 func (e *Element) Text(input ...interface{}) *Element {
@@ -18,12 +18,13 @@ func (e *Element) Text(input ...interface{}) *Element {
 	line := Convert(input)
 
 	new := &Element{
-		previous: e,
-		line:     line,
-		next:     make([]*Element, 0),
-		style:    style,
+		parent:    e,
+		line:      line,
+		childeren: make([]*Element, 0),
+		style:     style,
+		level:     e.level + 1,
 	}
-	e.next = append(e.next, new)
+	e.childeren = append(e.childeren, new)
 	return new
 
 }
@@ -33,20 +34,20 @@ func (e *Element) Read(lines *[]*Element) {
 		*lines = append(*lines, e)
 	}
 
-	for _, child := range e.next {
+	for _, child := range e.childeren {
 		*lines = append(*lines, child)
 		child.Read(lines)
 	}
 }
 
 func (e *Element) Center(line Line, width int) Line {
-	previous := line.String()
+	previous := Size(line)
 
-	if e.previous != nil && e.style.InferCenter {
-		previous = e.previous.line.String()
+	if e.parent != nil && e.style.InferCenter {
+		previous = Size(e.parent.line.Split()...)
 	}
 
-	size := (width - utf8.RuneCountInString(previous)) / 2
+	size := (width - previous) / 2
 
 	if size < 1 {
 		return line
