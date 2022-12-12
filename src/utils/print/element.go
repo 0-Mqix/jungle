@@ -10,21 +10,29 @@ type Element struct {
 	line     Line
 	next     []*Element
 	previous *Element
-	style    *Style
+	style    Style
 }
 
-func (e *Element) Text(line Line) *Element {
+func (e *Element) Text(input ...interface{}) *Element {
+	style := InStyle(input)
+	line := Convert(input)
+
 	new := &Element{
 		previous: e,
 		line:     line,
-		level:    e.level + 1,
 		next:     make([]*Element, 0),
+		style:    style,
 	}
 	e.next = append(e.next, new)
 	return new
+
 }
 
 func (e *Element) Read(lines *[]*Element) {
+	if len(*lines) == 0 {
+		*lines = append(*lines, e)
+	}
+
 	for _, child := range e.next {
 		*lines = append(*lines, child)
 		child.Read(lines)
@@ -51,17 +59,14 @@ func (e *Element) Center(line Line, width int) Line {
 	return line
 }
 
-func (e *Element) Align() Line {
-	line := Create(strings.Repeat(" ", e.level*2), e.line)
+func (e *Element) Align(line Line) Line {
 
-	style := DefaultStyle()
-
-	if e.style != nil {
-		style = e.style
+	if e.style.InferLevel {
+		line = Create(strings.Repeat(" ", e.level*2), line)
 	}
 
-	padding := style.Padding
-	align := style.Alignment
+	padding := e.style.Padding
+	align := e.style.Alignment
 
 	space := Width - len(line.String()) - padding*2
 
@@ -71,6 +76,7 @@ func (e *Element) Align() Line {
 	case LEFT:
 		line = Create(line, strings.Repeat(" ", space))
 		line = Wrap(line, strings.Repeat(" ", padding))
+
 	case RIGHT:
 		line = Create(strings.Repeat(" ", space), line)
 		line = Wrap(line, strings.Repeat(" ", padding))

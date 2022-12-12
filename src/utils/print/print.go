@@ -16,14 +16,9 @@ var (
 )
 
 var (
-	Width  = 45
+	Width  = 60
 	Margin = " "
 )
-
-func Wrap(line Line, input ...interface{}) Line {
-	wrapper := Convert(input)
-	return Create(wrapper, line, wrapper)
-}
 
 func Jungle() {
 	top := Create(TopLeft, strings.Repeat(Vertical.String(), Width), TopRight).
@@ -32,31 +27,20 @@ func Jungle() {
 	bottom := Create(BottomLeft, strings.Repeat(Vertical.String(), Width), BottomRight).
 		Style(DefaultColor)
 
-	root := Element{line: Create("TEST", color.Bold), level: 0, style: &Style{Padding: 0, Alignment: CENTER}}
-	// test.GetStyle().Alignment = CENTER
-	test := root.Text(Create("ik ben een ", "aap", color.FgHiYellow, color.Bold))
-	vis := root.Text(Create("ik ben een ", "vis", color.FgHiBlue, color.Bold))
-	vis.GetStyle().Alignment = RIGHT
+	root := Element{line: Create("test")}
+	root.Style(CENTER)
 
-	test.Text(Create("hallo ", color.FgWhite, "thom", color.FgRed, color.Bold))
-	// thom.GetStyle().Alignment = CENTER
-	test.Text(Create("hallo ", color.FgWhite, "max", color.FgHiMagenta, color.Bold))
-
-	wow := root.Text(Create("wow", color.FgBlack))
-	wow.GetStyle().Padding = 0
-
-	t1 := root.Text(Create("test", color.Bold, color.FgBlack))
-	t1.GetStyle().Alignment = LEFT
-	t1.GetStyle().Padding = 0
-
-	// thom.GetStyle().InferCenter = true
-	lines := []*Element{&root}
-	root.Read(&lines)
-
+	root.Text("lets\ngo monkey \nthis is \n(also inline)", color.Bold).Style(InferCenter(true))
+	root.Text("this is multi\nline ", color.Bold, "max", color.FgHiBlue).Style(InferCenter(true), CENTER)
 	top.Print()
 
+	lines := make([]*Element, 0)
+	root.Read(&lines)
+
 	for _, e := range lines {
-		e.Align().Print()
+		for _, l := range e.line.Split() {
+			e.Align(l).Print()
+		}
 	}
 
 	bottom.Print()

@@ -2,6 +2,7 @@ package print
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -13,16 +14,16 @@ type Text struct {
 	faith []color.Attribute
 }
 
+func CreateText(s string, faith []color.Attribute) Text { return Text{value: s, faith: faith} }
+
 func Create(input ...interface{}) Line {
 	return Convert(input)
 }
 
 func Convert(input []interface{}) Line {
-	lenght := len(input)
-	line := make(Line, 0)
-
 	var creating bool
 	var text Text
+	var line Line
 
 	reset := func() {
 		if !creating {
@@ -34,25 +35,22 @@ func Convert(input []interface{}) Line {
 		text = Text{}
 	}
 
-	for i := 0; i < lenght; i++ {
-		array, ok := input[i].(Line)
-		if ok {
-			reset()
-			line = append(line, array...)
-			continue
-		}
+	for _, v := range input {
+		switch v := v.(type) {
 
-		value, ok := input[i].(string)
-		if ok {
+		case Line:
+			reset()
+			line = append(line, v...)
+
+		case string:
 			reset()
 			creating = true
-			text = Text{value: value}
-			continue
-		}
+			text = Text{value: v}
 
-		attribute, ok := input[i].(color.Attribute)
-		if ok && creating {
-			text.faith = append(text.faith, attribute)
+		case color.Attribute:
+			if creating {
+				text.faith = append(text.faith, v)
+			}
 		}
 	}
 
@@ -78,6 +76,34 @@ func (line Line) String() (s string) {
 	return
 }
 
+func (line Line) Split() []Line {
+	result := make([]Line, 0)
+	new := make(Line, 0)
+
+	for _, text := range line {
+		parts := strings.Split(text.value, "\n")
+		size := len(parts)
+
+		if size > 1 {
+			new = append(new, CreateText(parts[0], text.faith))
+			result = append(result, new)
+
+			for i := 1; i < size-1; i++ {
+				result = append(result, Line{CreateText(parts[i], text.faith)})
+			}
+
+			new = Line{CreateText(parts[size-1], text.faith)}
+			continue
+		}
+
+		new = append(new, text)
+	}
+
+	result = append(result, new)
+
+	return result
+}
+
 func (line Line) Print() {
 	for i, text := range line {
 		color.New(text.faith...).Print(text.value)
@@ -86,20 +112,9 @@ func (line Line) Print() {
 			fmt.Print("\n")
 		}
 	}
-
 }
 
-func (line Line) Cut(x int) (Line, int) {
-	// start := len(line.String())
-	size := len(line) - 1
-
-	for i := size; i > 0; i-- {
-		if x < 1 {
-			return line, 0
-		}
-		// value := line[i].value
-
-	}
-
-	return line, 0
+func Wrap(line Line, input ...interface{}) Line {
+	wrapper := Convert(input)
+	return Create(wrapper, line, wrapper)
 }
