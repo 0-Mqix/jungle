@@ -40,6 +40,32 @@ func (e *Element) Read(lines *[]*Element) {
 	}
 }
 
+func (e *Element) Print() {
+	if e.parent == nil {
+		for _, l := range e.line.Split() {
+			e.Align(l).Print()
+		}
+	}
+
+	style := e.style
+
+	for i, child := range e.childeren {
+		if len(style.Even) > 0 && i%2 == 0 {
+			child.line.Style(style.Even...)
+		}
+
+		if len(style.Odd) > 0 && i%2 != 0 {
+			child.line.Style(style.Odd...)
+		}
+
+		for _, l := range child.line.Split() {
+			child.Align(l).Print()
+		}
+
+		child.Print()
+	}
+}
+
 func (e *Element) Center(line Line, width int) Line {
 	previous := Size(line)
 

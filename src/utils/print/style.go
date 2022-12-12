@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	DefaultPadding = 2
+	DefaultPadding = 1
 	DefaultColor   = color.FgHiGreen
 )
 
