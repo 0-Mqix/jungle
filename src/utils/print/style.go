@@ -3,6 +3,10 @@ package print
 import "github.com/fatih/color"
 
 type Alignment int
+type Padding int
+
+type InferCenter bool
+type InferLevel bool
 
 const (
 	LEFT Alignment = iota + 0
@@ -23,4 +27,22 @@ type Style struct {
 
 func DefaultStyle() *Style {
 	return &Style{Padding: DefaultPadding}
+}
+
+func (e *Element) GetStyle() *Style {
+	if e.style != nil {
+		return e.style
+	}
+
+	style := DefaultStyle()
+	e.style = style
+	return style
+}
+
+func (e *Element) Style(input ...interface{}) *Element {
+	style = e.GetStyle()
+
+	padding := 
+
+	return e
 }

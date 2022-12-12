@@ -13,16 +13,6 @@ type Element struct {
 	style    *Style
 }
 
-func (e *Element) Style(line Line) *Style {
-	if e.style != nil {
-		return e.style
-	}
-
-	style := DefaultStyle()
-	e.style = style
-	return style
-}
-
 func (e *Element) Text(line Line) *Element {
 	new := &Element{
 		previous: e,
@@ -80,9 +70,11 @@ func (e *Element) Align() Line {
 		line = e.Center(line, Width)
 	case LEFT:
 		line = Create(line, strings.Repeat(" ", space))
+		line = Wrap(line, strings.Repeat(" ", padding))
 	case RIGHT:
 		line = Create(strings.Repeat(" ", space), line)
+		line = Wrap(line, strings.Repeat(" ", padding))
 	}
 
-	return Wrap(HORIZONTAL.Style(DefaultColor), Wrap(Create(strings.Repeat(" ", padding)), line))
+	return Wrap(line, Horizontal.Style(DefaultColor))
 }
