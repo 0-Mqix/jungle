@@ -14,6 +14,10 @@ type Text struct {
 }
 
 func Create(input ...interface{}) Line {
+	return Convert(input)
+}
+
+func Convert(input []interface{}) Line {
 	lenght := len(input)
 	line := make(Line, 0)
 
