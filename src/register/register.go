@@ -2,6 +2,7 @@ package register
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 
@@ -60,6 +61,10 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 	}
 
 	fmt.Println(strings.Repeat("-", 50))
+
+	if exitAfterExport {
+		os.Exit(0)
+	}
 }
 
 func ReadStructs(structs []interface{}) map[string]reflect.Value {

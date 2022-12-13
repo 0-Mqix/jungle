@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	modeArg   *string
-	targetArg *string
+	modeArg         *string
+	targetArg       *string
+	exitAfterExport bool
 )
 
 func UseJungeArgs() {
@@ -35,6 +36,8 @@ func GetMethods(config *Config) ([]comment.Method, string) {
 
 		switch mode {
 		case "BUILD", "EXPORT":
+			exitAfterExport = true
+
 			for _, m := range methods {
 				file.Add(m)
 			}
