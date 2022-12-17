@@ -28,6 +28,11 @@ func main() {
 	register.UseJungeArgs()
 	flag.Parse()
 
+	register.OnlyExtractJungleFileAndExit(register.Config{
+		Directories: []string{"./"},
+		Debug:       true,
+	}, &Hey{})
+
 	app := fiber.New()
 	hey := Hey{}
 	msg := msg.Msg("This is Magic")
