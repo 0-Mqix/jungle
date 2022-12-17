@@ -13,6 +13,17 @@ var (
 	exitAfterExport bool
 )
 
+func IsJungleBuild() bool {
+	mode := strings.ToUpper(*modeArg)
+
+	switch mode {
+	case "BUILD", "EXPORT":
+		return true
+	default:
+		return false
+	}
+}
+
 func UseJungeArgs() {
 	modeArg = flag.String("jungle-mode", "?", "")
 	targetArg = flag.String("jungle-target", "?", "")
