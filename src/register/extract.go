@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func OnlyExtractJungleFileAndExit(config Config, structs ...interface{}) {
+func OnlyExtractJungleFileAndExit(config Config) {
 	if !IsJungleBuild() {
 		return
 	}
