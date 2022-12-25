@@ -15,7 +15,7 @@ type jungleFile struct {
 }
 
 func StartJungleFile(config *Config) *jungleFile {
-	f, err := os.OpenFile(config.target, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(config.routeTarget, os.O_RDWR|os.O_CREATE, 0644)
 
 	if err != nil {
 		fmt.Println("start:", err)
@@ -33,7 +33,7 @@ func (e *jungleFile) Clear() {
 }
 
 func (e *jungleFile) Import() (pairs []comment.Method) {
-	content, err := os.ReadFile(e.Config.target)
+	content, err := os.ReadFile(e.Config.routeTarget)
 
 	if err != nil {
 		fmt.Println("import read:", err)

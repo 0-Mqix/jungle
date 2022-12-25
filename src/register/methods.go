@@ -1,20 +1,15 @@
 package register
 
 import (
-	"flag"
 	"strings"
 
 	"github.com/0-Mqix/jungle/src/comment"
 )
 
-var (
-	modeArg         *string
-	targetArg       *string
-	exitAfterExport bool
-)
+var ()
 
-func IsJungleBuild() bool {
-	mode := strings.ToUpper(*modeArg)
+func (j *Jungle) IsBuild() bool {
+	mode := strings.ToUpper(*j.modeArg)
 
 	switch mode {
 	case "BUILD", "EXPORT":
@@ -24,42 +19,32 @@ func IsJungleBuild() bool {
 	}
 }
 
-func UseJungeArgs() {
-	modeArg = flag.String("jungle-mode", "?", "")
-	targetArg = flag.String("jungle-target", "?", "")
+func UseArgs() {
 }
 
-func GetMethods(config *Config) ([]comment.Method, string) {
-	mode := strings.ToUpper(*modeArg)
-	target := *targetArg
-
+func (j *Jungle) GetMethods() []comment.Method {
 	methods := make([]comment.Method, 0)
-	for _, directory := range config.Directories {
-		methods = append(methods, comment.GetJungleMethods(directory, config.Debug)...)
+
+	for _, directory := range j.Directories {
+		methods = append(methods, comment.GetJungleMethods(directory, j.Debug)...)
 	}
 
-	if target != "?" {
-		config.target = target
-	}
+	if j.mode != "" {
+		file := StartJungleFile(j.Config)
 
-	if mode != "?" {
-		file := StartJungleFile(config)
-
-		switch mode {
+		switch j.mode {
 		case "BUILD", "EXPORT":
-			exitAfterExport = true
 
 			for _, m := range methods {
 				file.Add(m)
 			}
-			return methods, mode
 
 		case "USE", "IMPORT":
 			methods = file.Import()
-			return methods, mode
 		}
 
 	}
 
-	return methods, mode
+	j.methods = methods
+	return methods
 }

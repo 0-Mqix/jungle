@@ -3,20 +3,11 @@ package register
 import (
 	"fmt"
 	"os"
-	"strings"
 )
 
-func OnlyExtractJungleFileAndExit(config Config) {
-	if !IsJungleBuild() {
-		return
-	}
+func (j *Jungle) ReadProject() {
+	methods := j.GetMethods()
 
-	fmt.Println("[JUNGLE]")
-	fmt.Println(strings.Repeat("-", 50))
-	fmt.Println(" Struct Names:")
-
-	fmt.Println("\n Comment Methods:")
-	methods, _ := GetMethods(&config)
 	var last string
 
 	for _, m := range methods {
@@ -28,9 +19,10 @@ func OnlyExtractJungleFileAndExit(config Config) {
 
 		last = name
 
-		fmt.Printf("  %s.%s.%s [?] \n", m.Pkg, m.Struct, m.Name)
+		fmt.Printf("  %s.%s.%s \n", m.Pkg, m.Struct, m.Name)
 	}
 
-	fmt.Println(strings.Repeat("-", 50))
-	os.Exit(0)
+	if j.IsBuild() {
+		os.Exit(0)
+	}
 }

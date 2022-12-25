@@ -16,10 +16,11 @@ var (
 type Config struct {
 	Directories []string
 	Debug       bool
-	target      string
+	routeTarget string
+	tosTarget   string
 }
 
-func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
+func (j *Jungle) UseRoutes(app *fiber.App, structs ...interface{}) {
 
 	fmt.Println("[JUNGLE]")
 	fmt.Println(strings.Repeat("-", 50))
@@ -28,10 +29,9 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 	values := ReadStructs(structs)
 
 	fmt.Println("\n Comment Methods:")
-	methods, _ := GetMethods(&config)
 	var last string
 
-	for _, m := range methods {
+	for _, m := range j.methods {
 		name := fmt.Sprintf("%s.%s", m.Pkg, m.Struct)
 		method := values[name].MethodByName(m.Name)
 		t := method.Type()
@@ -62,7 +62,7 @@ func JungleRoutes(config Config, app *fiber.App, structs ...interface{}) {
 
 	fmt.Println(strings.Repeat("-", 50))
 
-	if exitAfterExport {
+	if j.exitAfterRead {
 		os.Exit(0)
 	}
 }
